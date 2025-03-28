@@ -1,9 +1,3 @@
-Here's a **detailed and well-structured** `README.md` file for your project. It includes an overview, setup instructions, API details, and more.
-
----
-
-### 📜 **README.md**
-```md
 # 🌿 Virtual Herbal Garden
 
 **Virtual Herbal Garden** is an interactive web-based platform designed to explore and learn about medicinal plants through **3D models** and **data analytics**. It combines **FastAPI**, **MongoDB**, and **Three.js** to provide a **dynamic visualization** and **scientific insights** into various herbs and their ecological impact.
@@ -45,7 +39,7 @@ VirtualPlantBot/
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/VirtualPlantBot.git
+git clone https://github.com/VaishnaviUnnikrishnan/VirtualHerbalGarden
 cd VirtualPlantBot
 ```
 
@@ -123,34 +117,16 @@ Your MongoDB collection **herbal_plants** should follow this schema:
 ---
 
 ## 📜 License
-This project is licensed under the **MIT License**. Feel free to modify and contribute!
+This project is licensed under the **MIT License**.
 
 ---
+![image](https://github.com/user-attachments/assets/08cd9f82-cb48-43b7-8900-acff1f034bb4)
 
-## 🤝 Contributors
-- **[Your Name](https://github.com/yourusername)** - Developer  
+![image](https://github.com/user-attachments/assets/d08920c0-4a79-4697-a07e-7a0cf9312c85)
 
----
+![image](https://github.com/user-attachments/assets/6b7d0c61-d20a-4298-98e0-227349a6324e)
 
-Happy coding! 🚀🌱
-```
 
----
 
-### **Steps to Push to GitHub**
-Once you've added this `README.md`, push your project to GitHub:
 
-```bash
-git init  # If this is a new repo
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/VirtualPlantBot.git
-git push -u origin main
-```
 
-Replace `yourusername` with your actual GitHub username.
-
----
-
-This README provides **a professional and well-structured** guide for your project. Let me know if you need any modifications! 🚀
