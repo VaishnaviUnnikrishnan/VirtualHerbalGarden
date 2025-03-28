@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ plant_data.name }} - Impact Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #28a745; /* Changed to green */
+            --secondary-color: #6c757d;
+            --light-green: #d4edda;
+            --dark-green: #155724;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), #1e7e34);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.25rem;
+        }
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .badge-green {
+            background-color: var(--primary-color);
+        }
+        #map-container {
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .map-placeholder {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="back-btn">
+        <a href="/view/{{ plant_name }}" class="btn btn-light">
+            <i class="bi bi-arrow-left"></i> Back to Viewer
+        </a>
+    </div>
+
+    <div class="dashboard-header text-center">
+        <div class="container">
+            <h1><i class="bi bi-flower2"></i> {{ plant_data.name }} Impact Dashboard</h1>
+            <p class="lead">{{ plant_data.botanical_name }} | {{ plant_data.origin_place }}</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card kpi-card">
+                    <div class="kpi-value">{{ plant_data.oxygen_emitted_per_year }} kg</div>
+                    <div class="kpi-label">Oxygen Emission</div>
+                    <span class="badge badge-green text-white mt-2">Annual</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card">
+                    <div class="kpi-value">{{ plant_data.co2_reduction_per_year }} kg</div>
+                    <div class="kpi-label">CO₂ Reduction</div>
+                    <span class="badge badge-green text-white mt-2">Climate Impact</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card">
+                    <div class="kpi-value">{{ plant_data.water_purification_rate }} L/day</div>
+                    <div class="kpi-label">Water Purification</div>
+                    <span class="badge badge-green text-white mt-2">Filtration</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card">
+                    <div class="kpi-value">{{ plant_data.medicinal_uses_count }}</div>
+                    <div class="kpi-label">Medicinal Uses</div>
+                    <span class="badge badge-green text-white mt-2">Therapeutic</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Row -->
+        <div class="row">
+            <!-- Medicinal Properties -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Medicinal Properties</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="medicinalChart"></canvas>
+                        </div>
+                        <div class="mt-3">
+                            <h6>Key Benefits:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for value in plant_data.herbal_values %}
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    {{ value }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Metrics -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Growth Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                        <div class="row mt-3 text-center">
+                            <div class="col-4">
+                                <div class="kpi-value">{{ plant_data.growth_rate_per_month }} cm</div>
+                                <div class="kpi-label">Monthly Growth</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="kpi-value">{{ plant_data.diseases_cured_or_relieved }}</div>
+                                <div class="kpi-label">Diseases Helped</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="kpi-value">{{ plant_data.antioxidant_level }}%</div>
+                                <div class="kpi-label">Antioxidants</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Regions Map -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-globe"></i> Global Growth Regions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 text-center">
+                                <div class="display-4" style="color: var(--primary-color);">
+                                    {{ plant_data.origin_year }}
+                                </div>
+                                <p class="text-muted">First documented use</p>
+                                {% if plant_data.growth_regions %}
+                                <div class="mt-3">
+                                    <h6>Primary Growth Regions:</h6>
+                                    <ul class="list-group">
+                                        {% for region in plant_data.growth_regions %}
+                                        <li class="list-group-item">{{ region }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <div id="map-container">
+                                    {% if map_html and "not available" not in map_html %}
+                                        {{ map_html|safe }}
+                                    {% else %}
+                                        <div class="map-placeholder">
+                                            <div class="text-center">
+                                                <i class="bi bi-map" style="font-size: 3rem;"></i>
+                                                <p class="mt-2">Location data not available</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Medicinal Properties Chart
+        const medicinalCtx = document.getElementById('medicinalChart').getContext('2d');
+        new Chart(medicinalCtx, {
+            type: 'doughnut',
+            data: {
+                labels: JSON.parse('{{ herbal_values_json|safe }}'),
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: [
+                        '#28a745',
+                        '#5cb85c',
+                        '#7bc67b',
+                        '#a3d9a3'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Growth Metrics Chart
+        const growthCtx = document.getElementById('growthChart').getContext('2d');
+        new Chart(growthCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Growth Rate (cm)',
+                    data: Array(12).fill(0).map((_,i) => (i+1) * {{ plant_data.growth_rate_per_month }} * 0.4),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
